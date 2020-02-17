@@ -19,8 +19,7 @@ export class Game {
         const pokemon1 = new Pokemon('Pikachu', 80, 10, initialHealth, attack1);
         const pokemon2 = new Pokemon('Bulbizarre', 50, 10, initialHealth, attack2);
 
-        const battle = new Battle(pokemon1, pokemon2);
-        this.startBattle(battle);
+        this.startBattle(new Battle(pokemon1, pokemon2));
     }
 
     private startBattle(battle: Battle) {
@@ -29,25 +28,34 @@ export class Game {
 
         const firstPokemon = battle.getFirstPokemonBattle();
         const secondPokemon = firstPokemon === battle.pokemon1 ? battle.pokemon2 : battle.pokemon1;
+        
         console.log(`${firstPokemon.name} commence en premier le combat.`);
 
-        const winnerPokemon = this.fight(firstPokemon, secondPokemon);
-        console.log(`${winnerPokemon.name} gagne le combat.`);
+        this.fight(firstPokemon, secondPokemon);
     }
 
-    private fight(pokemon1: Pokemon, pokemon2: Pokemon) : Pokemon {
+    private fight(pokemon1: Pokemon, pokemon2: Pokemon) : void {
 
-        console.log(`${pokemon1.name} lance attaque ${pokemon1.attack.name} sur ${pokemon2.name}.`);
-        pokemon1.attackPokemon(pokemon2);
+        const myTimer = setInterval(function() {
 
-        if (pokemon2.health > 0) {
-            console.log(`Il reste ${pokemon2.health} points de vie à ${pokemon2.name}.`);
-        }
-        else {
-            console.log(`${pokemon2.name} est mort.`);
-            return pokemon1;
-        }
+            console.log(`${pokemon1.name} lance attaque ${pokemon1.attack.name} sur ${pokemon2.name}.`);
+            pokemon1.attackPokemon(pokemon2);
 
-        return this.fight(pokemon2, pokemon1);
+            if (pokemon2.health > 0) {
+                console.log(`Il reste ${pokemon2.health} points de vie à ${pokemon2.name}.`);
+            }
+            else {
+                console.log(`${pokemon2.name} est mort.`);
+                console.log(`${pokemon1.name} gagne le combat.`);
+                clearInterval(myTimer);
+            }
+
+            // change pokemon position for the next fight
+            let temp = pokemon1;
+            pokemon1 = pokemon2;
+            pokemon2 = temp;
+            
+        }, 3000);
     }
+
 }
